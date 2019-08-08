@@ -89,8 +89,6 @@ public class LinkedList<E> implements List<E> {
         return true;
     }
 
-    // TODO
-    // Removing the last element results in NullPointerException when toString() is called.
     @Override
     public boolean remove(Object o) {
         
@@ -110,17 +108,20 @@ public class LinkedList<E> implements List<E> {
 
         while(currentNode != null) {
             if(currentNode.data.equals(o)) {
-                previousNode.next = currentNode.next;
                 isRemoved = true;
+                break;
             }
+            previousNode = currentNode;
             currentNode = currentNode.next;
+            
         }
 
         if(isRemoved == true) {
+        	previousNode.next = currentNode.next;
             Count--;
         }
 
-        return false;
+        return isRemoved;
     }
 
     @Override
@@ -181,8 +182,6 @@ public class LinkedList<E> implements List<E> {
         return currentNode.data;
     }
 
-    // TODO
-    // Adding in between elements doesn't work.
     @Override
     public void add(int index, E element) {
         
@@ -198,8 +197,7 @@ public class LinkedList<E> implements List<E> {
            previousNode = currentNode;
            currentNode = currentNode.next;
            i++;
-           Count++;
-           break;
+           
        }
        
        Node<E> newNode = new Node<E>(element);
@@ -207,13 +205,14 @@ public class LinkedList<E> implements List<E> {
        
        if(currentNode.equals(head)) {
            head = newNode;
-           Count++;
-       } 
+       } else {
+    	  previousNode.next = newNode;
+       }
+       
+       Count++;
       
     }
 
-    // TODO
-    // Remove only removes the first element (the element at index 0)
     @Override
     public E remove(int index) {
         
@@ -223,22 +222,18 @@ public class LinkedList<E> implements List<E> {
         
         Node<E> currentNode = head;
         Node<E> previousNode = head;
+        int i = 0;
         
-        if(currentNode.equals(head)) {
-            head = head.next;
-            Count--;
-            return currentNode.data;
+        while(i < index) {
+        	previousNode = currentNode;
+        	currentNode = currentNode.next;
+        	i++;
         }
         
-        int i = 0;
-        while(currentNode != null) {
-            if(i == index) {
-                previousNode.next = currentNode.next;
-                currentNode = currentNode.next; 
-                break;
-            }
-            i++;
-            currentNode = currentNode.next;
+        if(currentNode.equals(head)) {
+        	head = head.next;
+        } else {
+        	previousNode.next = currentNode.next;
         }
         
         Count--;
@@ -257,8 +252,8 @@ public class LinkedList<E> implements List<E> {
        int index = 0;
        
        while(currentNode != null) {
-           if(currentNode.data == null) {
-               return -1;
+           if(currentNode.data == null && o == null) {
+               return index;
            }
            if(currentNode.data.equals(o)) {
                return index;
@@ -269,8 +264,6 @@ public class LinkedList<E> implements List<E> {
         return -1;
     }
 
-    // TODO
-    // last index of doesn't return the correct index.
     @Override
     public int lastIndexOf(Object o) {
         
@@ -278,20 +271,19 @@ public class LinkedList<E> implements List<E> {
             throw new NullPointerException("List is empty!");
         }
         
-        int index = Count - 1;
+        int index = 0;
         Node<E> currentNode = head;
+        int recordedIndex = -1;
         
         while(currentNode != null) {
-           if(currentNode.data.equals(o)) {
-               index--;
-               return index;
-           }
-           
-           currentNode = currentNode.next;
-           index--;
+        	if(currentNode.data.equals(o)) {
+        		recordedIndex = index;
+        	}
+        	currentNode = currentNode.next;
+        	index++;	
         }
+    	return recordedIndex;
         
-        return -1;
     }
     
     @Override
